@@ -20,6 +20,7 @@ export function clearAuthToken() {
 
 const isAuthenticated = () => !!localStorage.getItem("token");
 
+/* Protects private routes */
 function Protected({ children }) {
   if (!isAuthenticated()) return <Navigate to="/login" replace />;
   return children;
@@ -39,9 +40,15 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 
-          {/* Protected dashboard */}
-<Route path="/dashboard" element={<Dashboard />} />
-
+          {/* ✅ Protected dashboard route */}
+          <Route
+            path="/dashboard"
+            element={
+              <Protected>
+                <Dashboard />
+              </Protected>
+            }
+          />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />

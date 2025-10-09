@@ -5,22 +5,41 @@ export default function Signup() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
 
   async function onSubmit(e) {
     e.preventDefault();
     const form = Object.fromEntries(new FormData(e.target));
     setLoading(true);
+    setError('');
 
     try {
-      // Demo authentication (simulate network latency)
-      await new Promise(resolve => setTimeout(resolve, 800));
-      localStorage.setItem("token", "demo-token-" + Date.now());
+      const API = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000/api/auth';
+      const res = await fetch(`${API}/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullname: form.name,
+          email: form.email,
+          password: form.password,
+        }),
+      });
 
-      // Go to protected dashboard after successful signup
-      navigate("/dashboard");
+      const data = await res.json();
+
+      if (res.ok) {
+        // Save JWT from backend
+        const token = data.token || '';
+        localStorage.setItem("token", token);
+        // This event tells the Navbar to re-render
+        window.dispatchEvent(new Event("authChanged"));
+        navigate("/dashboard"); // Direct redirect
+      } else {
+        setError(data.message || "Signup failed");
+      }
     } catch (err) {
       console.error(err);
-      alert("Signup failed — please try again.");
+      setError("Server error — please try again.");
     } finally {
       setLoading(false);
     }
@@ -62,6 +81,8 @@ export default function Signup() {
             </p>
 
             <form onSubmit={onSubmit} className="space-y-5">
+              {error && <p className="text-center text-red-400 bg-red-900/50 p-3 rounded-lg">{error}</p>}
+              
               {/* Full Name */}
               <div className="group">
                 <label className="block text-sm font-semibold text-gray-200 mb-2">Full Name</label>

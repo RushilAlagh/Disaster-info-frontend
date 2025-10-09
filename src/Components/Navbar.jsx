@@ -1,13 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  // track auth state so navbar re-renders when token changes
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem("token"));
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    // handler for same-tab updates (dispatched after login/signup)
+    function onAuthChanged() {
+      setIsAuthenticated(!!localStorage.getItem("token"));
+    }
+
+    // handler for cross-tab changes
+    function onStorage(e) {
+      if (e.key === "token") {
+        setIsAuthenticated(!!localStorage.getItem("token"));
+      }
+    }
+
+    window.addEventListener("authChanged", onAuthChanged);
+    window.addEventListener("storage", onStorage);
+
+    return () => {
+      window.removeEventListener("authChanged", onAuthChanged);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
 
   function handleLogout() {
     localStorage.removeItem("token");
+    // notify same-tab listeners
+    window.dispatchEvent(new Event("authChanged"));
     navigate("/login");
   }
 
@@ -38,22 +63,15 @@ export default function Navbar() {
 
           {/* Desktop Links */}
           <div className="hidden md:flex space-x-2 items-center">
-            <Link 
-              to="/" 
-              className="px-4 py-2 rounded-lg hover:bg-gray-800 transition-all duration-200 hover:text-red-400"
-            >
-              Home
-            </Link>
-            {token && (
-              <Link 
-                to="/dashboard" 
-                className="px-4 py-2 rounded-lg hover:bg-gray-800 transition-all duration-200 hover:text-orange-400"
-              >
-                Dashboard
-              </Link>
-            )}
-            {!token && (
+            {/* Links to show when NOT logged in */}
+            {!isAuthenticated && (
               <>
+                <Link 
+                  to="/" 
+                  className="px-4 py-2 rounded-lg hover:bg-gray-800 transition-all duration-200 hover:text-red-400"
+                >
+                  Home
+                </Link>
                 <Link 
                   to="/login" 
                   className="px-4 py-2 rounded-lg hover:bg-gray-800 transition-all duration-200 hover:text-red-400"
@@ -68,7 +86,8 @@ export default function Navbar() {
                 </Link>
               </>
             )}
-            {token && (
+            {/* Button to show when logged in */}
+            {isAuthenticated && (
               <button
                 onClick={handleLogout}
                 className="px-4 py-2 ml-2 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 rounded-lg transition-all duration-200 font-semibold shadow-lg"
@@ -103,24 +122,16 @@ export default function Navbar() {
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-gray-800 bg-gray-800/50 backdrop-blur-xl">
           <div className="px-4 py-3 space-y-2">
-            <Link 
-              to="/" 
-              className="block px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Home
-            </Link>
-            {token && (
-              <Link 
-                to="/dashboard" 
-                className="block px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Dashboard
-              </Link>
-            )}
-            {!token && (
+            {/* Links to show when NOT logged in */}
+            {!isAuthenticated && (
               <>
+                <Link 
+                  to="/" 
+                  className="block px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Home
+                </Link>
                 <Link 
                   to="/login" 
                   className="block px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
@@ -137,7 +148,8 @@ export default function Navbar() {
                 </Link>
               </>
             )}
-            {token && (
+            {/* Button to show when logged in */}
+            {isAuthenticated && (
               <button
                 onClick={() => {
                   handleLogout();

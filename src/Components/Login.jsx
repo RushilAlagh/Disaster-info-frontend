@@ -7,27 +7,50 @@ export default function Login() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
 
   async function onSubmit(e) {
     e.preventDefault();
     const form = Object.fromEntries(new FormData(e.target));
     setLoading(true);
+    setError('');
 
     try {
-      // Demo authentication (simulate network latency)
-      await new Promise(resolve => setTimeout(resolve, 800));
-      setAuthToken('demo-token-' + Date.now());
+      const API = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000/api/auth';
+      const res = await fetch(`${API}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: form.email,
+          password: form.password
+        })
+      });
 
-      // Go to protected dashboard after successful auth
-      navigate('/dashboard');
+      const data = await res.json();
+
+      if (res.ok) {
+        const token = data.token || '';
+        localStorage.setItem('token', token);
+        window.dispatchEvent(new Event('authChanged'));
+
+        try {
+          if (typeof setAuthToken === 'function') setAuthToken(token);
+        } catch (err) {
+          // ignore if setAuthToken isn't available
+        }
+
+        // Direct redirect — no alert
+        navigate('/dashboard');
+      } else {
+        setError(data.message || 'Login failed — check credentials');
+      }
     } catch (err) {
       console.error(err);
-      alert('Login failed — check credentials or server.');
+      setError('Server error — please try again.');
     } finally {
       setLoading(false);
     }
   }
-
   return (
     <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4 py-12 relative bg-gray-900 text-white">
       {/* Animated background blobs */}
