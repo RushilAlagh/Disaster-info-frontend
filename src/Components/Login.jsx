@@ -88,6 +88,8 @@ export default function Login() {
             </p>
 
             <form onSubmit={onSubmit} className="space-y-5">
+              {error && <p className="text-center text-red-400 bg-red-900/50 p-3 rounded-lg">{error}</p>}
+              
               {/* Email */}
               <div className="group">
                 <label className="block text-sm font-semibold text-gray-200 mb-2">Email Address</label>

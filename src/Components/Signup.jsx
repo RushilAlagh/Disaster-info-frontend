@@ -96,6 +96,8 @@ export default function Signup() {
                     name="name"
                     type="text"
                     required
+                    pattern="[A-Za-z\s]+"
+                    title="Please enter only letters and spaces."
                     placeholder="John Doe"
                     className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-600 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 outline-none transition-all bg-gray-700 text-white"
                   />
