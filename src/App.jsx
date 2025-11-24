@@ -1,4 +1,3 @@
-// src/App.jsx
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
@@ -8,6 +7,11 @@ import Home from "./Components/Home.jsx";
 import Login from "./Components/Login.jsx";
 import Signup from "./Components/Signup.jsx";
 import Dashboard from "./Components/Dashboard.jsx";
+// Import the new pages
+import About from "./Components/About.jsx";
+import Contact from "./Components/Contact.jsx";
+import Docs from "./Components/Docs.jsx";        // <-- Added
+import Privacy from "./Components/Privacy.jsx";  // <-- Added
 
 /* Simple auth helpers using localStorage token */
 export function setAuthToken(token) {
@@ -33,14 +37,18 @@ export default function App() {
 
       <main className="flex-grow">
         <Routes>
-          {/* Public landing page */}
+          {/* Public pages */}
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/docs" element={<Docs />} />       {/* <-- Added */}
+          <Route path="/privacy" element={<Privacy />} /> {/* <-- Added */}
 
           {/* Auth routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 
-          {/* ✅ Protected dashboard route */}
+          {/* Protected dashboard route */}
           <Route
             path="/dashboard"
             element={

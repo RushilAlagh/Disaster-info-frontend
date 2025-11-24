@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom"; 
 
 export default function Footer() {
   return (
@@ -21,32 +22,32 @@ export default function Footer() {
             </span>
           </div>
 
-          {/* Links */}
+          {/* Links Section - UPDATED */}
           <div className="flex space-x-6">
-            <a 
-              className="text-sm text-gray-400 hover:text-red-500 transition-colors duration-200" 
-              href="#"
+            <Link 
+              to="/about"
+              className="text-sm text-gray-400 hover:text-red-500 transition-colors duration-200"
             >
               About
-            </a>
-            <a 
-              className="text-sm text-gray-400 hover:text-orange-500 transition-colors duration-200" 
-              href="#"
+            </Link>
+            <Link 
+              to="/contact"
+              className="text-sm text-gray-400 hover:text-orange-500 transition-colors duration-200"
             >
               Contact
-            </a>
-            <a 
-              className="text-sm text-gray-400 hover:text-pink-500 transition-colors duration-200" 
-              href="#"
+            </Link>
+            <Link 
+              to="/docs" 
+              className="text-sm text-gray-400 hover:text-pink-500 transition-colors duration-200"
             >
               Docs
-            </a>
-            <a 
-              className="text-sm text-gray-400 hover:text-red-500 transition-colors duration-200" 
-              href="#"
+            </Link>
+            <Link 
+              to="/privacy"
+              className="text-sm text-gray-400 hover:text-red-500 transition-colors duration-200"
             >
               Privacy
-            </a>
+            </Link>
           </div>
         </div>
 
