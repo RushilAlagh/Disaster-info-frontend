@@ -182,13 +182,14 @@ export default function Dashboard() {
     doc.save(`Situation_Report_${new Date().toISOString().split('T')[0]}.pdf`);
   };
 
-  const filteredEvents = filter === "all" ? events : events.filter(e => e.severity === filter);
+  const filteredEvents = (filter === "all" ? events : events.filter(e => e.severity === filter))
+    .filter(e => e.lat !== null && e.lon !== null && e.place !== "Unknown Location");
 
   const stats = {
-    total: events.length,
-    high: events.filter(e => e.severity === "High").length,
-    medium: events.filter(e => e.severity === "Medium").length,
-    low: events.filter(e => e.severity === "Low").length
+    total: filteredEvents.length,
+    high: filteredEvents.filter(e => e.severity === "High").length,
+    medium: filteredEvents.filter(e => e.severity === "Medium").length,
+    low: filteredEvents.filter(e => e.severity === "Low").length
   };
 
   return (
@@ -301,15 +302,15 @@ export default function Dashboard() {
               key={ev.id}
               onClick={() => handleEventClick(ev.lat, ev.lon)}
               className={`p-4 bg-white/5 border-l-2 border-transparent hover:bg-white/10 transition-all cursor-pointer rounded-r-lg group relative backdrop-blur-sm ${ev.severity === 'High' ? 'border-l-neon-red shadow-[inset_10px_0_20px_-10px_rgba(255,0,60,0.2)]' :
-                  ev.severity === 'Medium' ? 'border-l-neon-purple shadow-[inset_10px_0_20px_-10px_rgba(188,19,254,0.2)]' :
-                    'border-l-neon-blue shadow-[inset_10px_0_20px_-10px_rgba(0,240,255,0.2)]'
+                ev.severity === 'Medium' ? 'border-l-neon-purple shadow-[inset_10px_0_20px_-10px_rgba(188,19,254,0.2)]' :
+                  'border-l-neon-blue shadow-[inset_10px_0_20px_-10px_rgba(0,240,255,0.2)]'
                 }`}
             >
               <div className="flex justify-between items-start mb-1">
                 <div className="flex items-center space-x-2">
                   <span className={`font-bold text-sm tracking-wide ${ev.severity === 'High' ? 'text-neon-red drop-shadow-[0_0_5px_rgba(255,0,60,0.5)]' :
-                      ev.severity === 'Medium' ? 'text-neon-purple drop-shadow-[0_0_5px_rgba(188,19,254,0.5)]' :
-                        'text-neon-blue drop-shadow-[0_0_5px_rgba(0,240,255,0.5)]'
+                    ev.severity === 'Medium' ? 'text-neon-purple drop-shadow-[0_0_5px_rgba(188,19,254,0.5)]' :
+                      'text-neon-blue drop-shadow-[0_0_5px_rgba(0,240,255,0.5)]'
                     }`}>{ev.type}</span>
                 </div>
                 <div className="flex items-center space-x-2">
